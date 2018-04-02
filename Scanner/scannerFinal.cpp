@@ -13,7 +13,7 @@ bool periodToken(string s)
 	string state = "q0";
 
 	for (int i = 0; i < s.length(); i++) {
-		if (state = "q0" && s[i] = '.') {
+		if (state == "q0" && s[i] == '.') {
 			state = "qf";
 		}
 		else {
@@ -21,7 +21,7 @@ bool periodToken(string s)
 		}
 	}
 
-	if (state = "qf") {
+	if (state == "qf") {
 		return true;
 	}
 }
@@ -119,7 +119,7 @@ string tokenNames[30] =
 {
 	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS", 
 	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
-}
+};
 
 void setUpReservedWordsTable()
 {
@@ -146,7 +146,7 @@ void setUpReservedWordsTable()
 
 	reservedWords["eofm"] = EOFM;
 
-}
+};
 
 
 // Scaner processes only one word at a time
