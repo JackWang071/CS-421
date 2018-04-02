@@ -6,12 +6,29 @@
 
 using namespace std;
 
-
+// Period DFA
+// Done by: Jonathan
 bool periodToken(string s) 
 {
-	return (s[0] == '.');
+	string state = "q0";
+
+	for (int i = 0; i < s.length(); i++) {
+		if (state = "q0" && s[i] = '.') {
+			state = "qf";
+		}
+		else {
+			return false;
+		}
+	}
+
+	if (state = "qf") {
+		return true;
+	}
 }
 
+// WordToken DFA 
+// Done by:
+// RE:
 bool wordToken(string s) 
 {
 	char c;
@@ -94,8 +111,15 @@ bool wordToken(string s)
 // --------------------------------------------------------------
 
 ifstream fin;
-enum tokenType {ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS, WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM};
+enum tokenType {ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS, 
+WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM};
 unordered_map<string, tokenType> reservedWords;
+
+string tokenNames[30] = 
+{
+	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS", 
+	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
+}
 
 void setUpReservedWordsTable()
 {
@@ -124,7 +148,10 @@ void setUpReservedWordsTable()
 
 }
 
-int scanner(tokenType& type, string& word)
+
+// Scaner processes only one word at a time
+// Done by: Jonathan
+void scanner(tokenType& type, string& word)
 {
 	fin >> word;
 
@@ -171,8 +198,9 @@ int main()
 
 	while (true) {
 		scanner(type, word);
-		cout << "Type is: " << type << endl;
+		cout << "Type is: " << tokenNames[type] << endl;
 		cout << "Word is: " << word << endl; 
 	}
 
+	fin.close();
 }
