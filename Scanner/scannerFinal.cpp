@@ -146,7 +146,7 @@ void setUpReservedWordsTable()
 
 	reservedWords["eofm"] = EOFM;
 
-};
+}
 
 
 // Scaner processes only one word at a time
