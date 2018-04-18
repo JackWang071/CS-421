@@ -14,6 +14,8 @@ using namespace std;
 
 // ** Need the updated match and next_token (with 2 global vars)
 
+
+
 // ** Make each non-terminal into a function here
 // ** Be sure to put the corresponding grammar rule above each function
 
@@ -43,6 +45,38 @@ string typenames[30] =
 
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
+
+
+// ** Need the updated match and next_token (with 2 global vars)
+// Done by: Jonathan Tapia
+bool token_available;
+tokentype saved_token;
+
+tokentype next_token()
+{  
+	string lexeme;
+	if (!token_available)   // if there is no saved token from previous lookahead
+	{ 
+		scanner(saved_token, lexeme);  // call scanner to grab a new token
+    	token_available = true;                  // mark that fact that you have saved it
+    }
+	
+	return saved_token;    // return the saved token
+}
+
+
+bool match(tokentype expected)
+{
+	if (next_token() != expected)  // mismatch has occurred with the next token
+	{ 
+		syntaxerror1(expected, saved_token);
+    }
+	else  // match has occurred
+	{   
+		token_available = false;  // eat up the token
+		return true;              // say there was a match
+   }
+}
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 // ** Done by: Jack Wang
