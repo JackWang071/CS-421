@@ -1,98 +1,67 @@
-#include<iostream>
-#include<fstream>
-#include<string>
-using namespace std;
+#ifndef parser_C
+#define parser_C
+
+#include "parser.h"
 
 //=================================================
-// File parser.cpp written by Group Number: **
+// File parser.cpp written by Group Number: 4
 //=================================================
 
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
-
-// ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 
 // ** Need the updated match and next_token (with 2 global vars)
 
-
-
-// ** Make each non-terminal into a function here
-// ** Be sure to put the corresponding grammar rule above each function
-
-//prototypes
-void tense();
-void verb();
-void noun();
-void afterObject();
-void be();
-void afterNoun();
-void afterSubject();
-void s();
-void story();
-void syntaxerror1(tokentype expected, tokentype lexeme);
-void syntaxerror2(string functionname, tokentype expected);
-
-enum tokentype {
-	ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS,
-	WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM
-};
-
-string typenames[30] =
-{
-	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
-	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
-};
-
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
-
 
 // ** Need the updated match and next_token (with 2 global vars)
 // Done by: Jonathan Tapia
-bool token_available;
-tokentype saved_token;
 
-tokentype next_token()
-{  
+tokentype Parser::next_token()
+{
 	string lexeme;
 	if (!token_available)   // if there is no saved token from previous lookahead
-	{ 
+	{
 		scanner(saved_token, lexeme);  // call scanner to grab a new token
-    	token_available = true;                  // mark that fact that you have saved it
-    }
-	
+		token_available = true;                  // mark that fact that you have saved it
+	}
+
 	return saved_token;    // return the saved token
 }
 
 
-bool match(tokentype expected)
+bool Parser::match(tokentype expected)
 {
 	if (next_token() != expected)  // mismatch has occurred with the next token
-	{ 
+	{
 		syntaxerror1(expected, saved_token);
-    }
+	}
 	else  // match has occurred
-	{   
+	{
 		token_available = false;  // eat up the token
 		return true;              // say there was a match
-   }
+	}
 }
+
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 // ** Done by: Jack Wang
-void syntaxerror1(tokentype expected, tokentype lexeme) {
+void Parser::syntaxerror1(tokentype expected, tokentype lexeme) {
 	cout << "SYNTAX ERROR: expected " << typenames[(int)expected] << " but found " << typenames[(int)lexeme] << endl;
 	exit(1);
 }
-void syntaxerror2(string functionName, tokentype lexeme) {
+void Parser::syntaxerror2(string functionName, tokentype lexeme) {
 	cout << "SYNTAX ERROR: unexpected " << typenames[(int)lexeme] << " found in " << functionName << endl;
 	exit(1);
 }
 
+// ** Make each non-terminal into a function here
+// ** Be sure to put the corresponding grammar rule above each function
 
 // ** Done by: Marcus Jackson
 // <tense> ::= VERBPAST | VERBPASTNEG | VERB | VERBNEG
-void tense()
+void Parser::tense()
 {
 	cout << "Processing tense" << endl;
 	tokentype type = next_token();
@@ -112,7 +81,7 @@ void tense()
 }
 
 // <verb> ::= WORD2
-void verb()
+void Parser::verb()
 {
 	cout << "Processing verb" << endl;
 	tokentype type = next_token();
@@ -126,7 +95,7 @@ void verb()
 }
 
 //<noun> ::= WORD1 | PRONOUN
-void noun()
+void Parser::noun()
 {
 	cout << "Processing noun" << endl;
 	tokentype type = next_token();
@@ -142,7 +111,7 @@ void noun()
 }
 
 //<afterObject> ::= <verb> <tense>PERIOD | <noun> DESTINATION <verb> <tense> PERIOD
-void afterObject()
+void Parser::afterObject()
 {
 	cout << "Processing afterObject" << endl;
 	tokentype type = next_token();
@@ -181,7 +150,7 @@ void afterObject()
 }
 
 //<be> ::= IS | WAS
-void be()
+void Parser::be()
 {
 	cout << "Processing be" << endl;
 	tokentype type = next_token();
@@ -198,7 +167,7 @@ void be()
 }
 
 //<afterNoun> ::= <be> PERIOD | DESTINATION <verb> <tense> PERIOD | OBJECT <afterOject>
-void afterNoun()
+void Parser::afterNoun()
 {
 	cout << "Processing afterNoun" << endl;
 	tokentype type = next_token();
@@ -239,7 +208,7 @@ void afterNoun()
 }
 
 //<afterSubject> ::= <verb> <tense> PERIOD | <noun> <afterNoun>
-void afterSubject()
+void Parser::afterSubject()
 {
 	cout << "Processing afterSubject" << endl;
 	tokentype type = next_token();
@@ -272,7 +241,7 @@ void afterSubject()
 }
 
 //<s> ::= [CONNECTOR]<noun> SUBJECT <afterSubject>
-void s()
+void Parser::s()
 {
 	cout << "Processing s" << endl;
 	tokentype type = next_token();
@@ -308,7 +277,7 @@ void s()
 }
 
 //<story> ::= <s> { <s> }
-void story()
+void Parser::story()
 {
 	cout << "Processing story" << endl;
 	s();
@@ -349,31 +318,21 @@ void story()
 	
 }
 
-
-
-
-
-
 // The test driver to start the parser
 // Done by:  Marcus Jackson
-int main()
+int Parser::startup()
 {
-	fstream fin; //making the filestream
 	string input; //input from the user
-
 	string word; //word to be stored from the file
 
 	cout << "Enter the filename:" << endl; //getting the file name
 	cin >> input;
 
-	fin.open(input.c_str(), fstream::in); //opening the file
+	fin.open(input.c_str()); //opening the file
 
 	if (fin.is_open()) //file opened
 	{
-		while (fin >> word) //while there is a word store it
-		{
-			//story();
-		}
+		//story();
 	}
 	else //file unable to be opened
 	{
@@ -389,3 +348,5 @@ int main()
 
 }// end
  //** should require no other input files!
+
+#endif // !parser_C
