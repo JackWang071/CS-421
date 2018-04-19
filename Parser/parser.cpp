@@ -23,7 +23,7 @@ tokentype Parser::next_token()
 	string lexeme;
 	if (!token_available)   // if there is no saved token from previous lookahead
 	{
-		scanner(saved_token, lexeme);  // call scanner to grab a new token
+		scanner.scanner(saved_token, lexeme);  // call scanner to grab a new token
 		token_available = true;                  // mark that fact that you have saved it
 	}
 
@@ -36,6 +36,7 @@ bool Parser::match(tokentype expected)
 	if (next_token() != expected)  // mismatch has occurred with the next token
 	{
 		syntaxerror1(expected, saved_token);
+		return false;
 	}
 	else  // match has occurred
 	{
@@ -328,23 +329,23 @@ int Parser::startup()
 	cout << "Enter the filename:" << endl; //getting the file name
 	cin >> input;
 
-	fin.open(input.c_str()); //opening the file
+	//fin.open(input.c_str()); //opening the file
 
-	if (fin.is_open()) //file opened
+	if (scanner.openfile(input.c_str())) //file opened
 	{
-		//story();
+		story();
 	}
 	else //file unable to be opened
 	{
-		cout << input.c_str() << " was unable to be opened." << endl;
-		return 0;
+		cout << input.c_str() << " was unable to be opened." << endl;		
 	}
 
-	fin.close(); //closing the file
+	//fin.close(); //closing the file
 
 				 //- opens the input file
 				 //- calls the <story> to start parsing
 				 //- closes the input file 
+	return 0;
 
 }// end
  //** should require no other input files!
