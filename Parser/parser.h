@@ -10,15 +10,17 @@ using namespace std;
 
 class Parser {
 private:
-	string typenames[30] =
+	bool token_available;
+	tokentype saved_token;
+	string lexeme;
+	Scanner scanner;
+	string tokenNames[30] =
 	{
 		"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
 		"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
 	};
-	bool token_available;
-	tokentype saved_token;
-	Scanner scanner;
 public:
+	Parser(string filename);
 	tokentype next_token();
 	bool match(tokentype expected);
 	void tense();
@@ -30,10 +32,8 @@ public:
 	void afterSubject();
 	void s();
 	void story();
-	void syntaxerror1(tokentype expected, tokentype lexeme);
-	void syntaxerror2(string functionname, tokentype expected);
-
-	int startup();
+	void syntaxerror1(tokentype expected, string lexeme);
+	void syntaxerror2(string functionname, string lexeme);
 };
 
 

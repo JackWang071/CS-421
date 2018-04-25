@@ -42,7 +42,6 @@ bool Scanner::periodToken(string s)
 bool Scanner::wordToken(string s)
 {
 	char c;
-	char prevc;
 	bool stuck = false;
 
 	string state = "q0";
@@ -163,7 +162,10 @@ int Scanner::scanner(tokentype& type, string& word)
 	fin >> word;
 	if (word == "eofm") {
 		fin.close();
-		exit(0);
+
+
+		cin.clear(); cin.ignore(); cin.get();
+		exit(1);
 	}
 	else if (wordToken(word)) {
 		unordered_map<string, tokentype>::const_iterator pair = reservedWords.find(word);
