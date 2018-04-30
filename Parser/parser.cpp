@@ -1,7 +1,8 @@
 #ifndef parser_C
 #define parser_C
 
-#include "parser.h"
+#include<iostream>
+#include<string>
 
 using namespace std;
 
@@ -9,6 +10,35 @@ using namespace std;
 // File parser.cpp written by Group Number: 4
 //=================================================
 
+enum tokentype {
+	ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS,
+	WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM
+};
+
+bool token_available;
+tokentype saved_token;
+string lexeme;
+Scanner scanner;
+string tokenNames[30] =
+{
+	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
+	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
+};
+
+tokentype next_token();
+bool match(tokentype expected);
+void tense();
+void verb();
+void noun();
+void afterObject();
+void be();
+void afterNoun();
+void afterSubject();
+void s();
+void story();
+void syntaxerror1(tokentype expected, string lexeme);
+void syntaxerror2(string functionname, string lexeme);
+
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
 
@@ -16,22 +46,11 @@ using namespace std;
 
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
-
-Parser::Parser(string filename) {
-	if (scanner.openfile(filename.c_str())) //file opened
-	{
-		story();
-	}
-	else //file unable to be opened
-	{
-		cout << filename.c_str() << " was unable to be opened." << endl;
-	}
-}
 
 // ** Need the updated match and next_token (with 2 global vars)
 // Done by: Jonathan Tapia
 
-tokentype Parser::next_token()
+tokentype next_token()
 {
 	if (!token_available)   // if there is no saved token from previous lookahead
 	{
@@ -41,7 +60,7 @@ tokentype Parser::next_token()
 
 	return saved_token;    // return the saved token
 }
-bool Parser::match(tokentype expected)
+bool match(tokentype expected)
 {
 	if (next_token() != expected)  // mismatch has occurred with the next token
 	{
@@ -58,17 +77,13 @@ bool Parser::match(tokentype expected)
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 // ** Done by: Jack Wang
-void Parser::syntaxerror1(tokentype expected, string lexeme) {
+void syntaxerror1(tokentype expected, string lexeme) {
 	cout << "SYNTAX ERROR: expected " << tokenNames[(int)expected] << " but found " << lexeme << endl;
-
-
 	cin.clear(); cin.get(); cin.ignore();
 	exit(1);
 }
-void Parser::syntaxerror2(string functionName, string lexeme) {
+void syntaxerror2(string functionName, string lexeme) {
 	cout << "SYNTAX ERROR: unexpected " << lexeme << " found in " << functionName << endl;
-
-
 	cin.clear(); cin.get(); cin.ignore();
 	exit(1);
 }
@@ -78,7 +93,7 @@ void Parser::syntaxerror2(string functionName, string lexeme) {
 
 // ** Done by: Marcus Jackson
 // <tense> ::= VERBPAST | VERBPASTNEG | VERB | VERBNEG
-void Parser::tense()
+void tense()
 {
 	cout << "Processing tense" << endl;
 	switch(next_token())
@@ -97,7 +112,7 @@ void Parser::tense()
 }
 
 // <verb> ::= WORD2
-void Parser::verb()
+void verb()
 {
 	cout << "Processing verb" << endl;
 	switch (next_token())
@@ -110,7 +125,7 @@ void Parser::verb()
 }
 
 //<noun> ::= WORD1 | PRONOUN
-void Parser::noun()
+void noun()
 {
 	cout << "Processing noun" << endl;
 	switch (next_token())
@@ -125,7 +140,7 @@ void Parser::noun()
 }
 
 //<afterObject> ::= <verb> <tense>PERIOD | <noun> DESTINATION <verb> <tense> PERIOD
-void Parser::afterObject()
+void afterObject()
 {
 	cout << "Processing afterObject" << endl;
 	switch (next_token())
@@ -163,7 +178,7 @@ void Parser::afterObject()
 }
 
 //<be> ::= IS | WAS
-void Parser::be()
+void be()
 {
 	cout << "Processing be" << endl;
 	switch (next_token())
@@ -179,7 +194,7 @@ void Parser::be()
 }
 
 //<afterNoun> ::= <be> PERIOD | DESTINATION <verb> <tense> PERIOD | OBJECT <afterOject>
-void Parser::afterNoun()
+void afterNoun()
 {
 	cout << "Processing afterNoun" << endl;
 	switch (next_token())
@@ -219,7 +234,7 @@ void Parser::afterNoun()
 }
 
 //<afterSubject> ::= <verb> <tense> PERIOD | <noun> <afterNoun>
-void Parser::afterSubject()
+void afterSubject()
 {
 	cout << "Processing afterSubject" << endl;
 	switch (next_token())
@@ -251,7 +266,7 @@ void Parser::afterSubject()
 }
 
 //<s> ::= [CONNECTOR]<noun> SUBJECT <afterSubject>
-void Parser::s()
+void s()
 {
 	cout << "Processing s" << endl;
 	switch (next_token())
@@ -287,7 +302,7 @@ void Parser::s()
 }
 
 //<story> ::= <s> { <s> }
-void Parser::story()
+void story()
 {
 	cout << "Processing story" << endl;
 	s();
@@ -329,26 +344,22 @@ void Parser::story()
 // Done by:  Marcus Jackson
 int main()
 {
-	string input; //input from the user
+	string filename; //input from the user
 	string word; //word to be stored from the file
 
 	cout << "Enter the filename: "; //getting the file name
-	cin >> input;
+	cin >> filename;
 
 	Parser test = Parser(input);
 
-	//fin.open(input.c_str()); //opening the file
-
-	/*
-	if (scanner.openfile(input.c_str())) //file opened
+	if (scanner.startup(filename.c_str())) //file opened
 	{
 		story();
 	}
 	else //file unable to be opened
 	{
-		cout << input.c_str() << " was unable to be opened." << endl;		
+		cout << filename.c_str() << " was unable to be opened." << endl;
 	}
-	*/
 
 	//fin.close(); //closing the file
 

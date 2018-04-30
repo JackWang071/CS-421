@@ -1,23 +1,44 @@
 #ifndef scannerFinal_C
 #define scannerFinal_C
 
-#include "scanner.h"
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <algorithm>
+#include <iterator>
+#include <unordered_map>
 
 using namespace std;
 
-Scanner::Scanner()
+enum tokentype {
+	ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS,
+	WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM
+};
+
+ifstream fin;
+unordered_map<string, tokentype> reservedWords;
+string tokenNames[30] =
+{
+	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
+	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
+};
+
+bool startup(string filename);
+int scanner(tokentype& type, string& word);
+void setUpReservedWordsTable();
+bool periodToken(string s);
+bool wordToken(string s);
+
+bool startup(string filename)
 {
 	setUpReservedWordsTable();
-}
-
-bool Scanner::openfile(string filename) {
 	fin.open(filename);
 	return fin.is_open();
 }
 
 // Period DFA
 // Done by: Jonathan
-bool Scanner::periodToken(string s)
+bool periodToken(string s)
 {
 	string state = "q0";
 
@@ -39,7 +60,7 @@ bool Scanner::periodToken(string s)
 // WordToken DFA 
 // Done by: Jack Wang
 // RE:
-bool Scanner::wordToken(string s)
+bool wordToken(string s)
 {
 	char c;
 	bool stuck = false;
@@ -127,7 +148,7 @@ bool Scanner::wordToken(string s)
 
 // --------------------------------------------------------------
 
-void Scanner::setUpReservedWordsTable()
+void setUpReservedWordsTable()
 {
 	reservedWords["masu"] = VERB;
 	reservedWords["masen"] = VERBNEG;
@@ -157,7 +178,7 @@ void Scanner::setUpReservedWordsTable()
 
 // Scaner processes only one word at a time
 // Done by: Jonathan
-int Scanner::scanner(tokentype& type, string& word)
+int scanner(tokentype& type, string& word)
 {
 	fin >> word;
 	if (word == "eofm") {
