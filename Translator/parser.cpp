@@ -17,13 +17,10 @@ using namespace std;
 // ** Be sure to put the name of the programmer above each function
 // i.e. Done by:
 
-Parser::Parser() {
-
-}
-
 Parser::Parser(string filename) {
 	if (scanner.openfile(filename.c_str())) //file opened
 	{
+		fout.open("translated.txt");
 		story();
 	}
 	else //file unable to be opened
@@ -59,6 +56,13 @@ bool Parser::match(tokentype expected)
 	}
 }
 
+// ** Done by:
+void Parser::getEword() {
+	
+}
+void Parser::gen(gentype type) {
+
+}
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 // ** Done by: Jack Wang

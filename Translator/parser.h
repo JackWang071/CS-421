@@ -8,6 +8,18 @@ using namespace std;
 
 #include "scanner.h"
 
+enum gentype { CONN, ACR, DESC, OBJ, TO, ACN, TNS };
+/*
+Using abbreviated names because we're lazy.
+CONN: CONNECTOR
+ACR: ACTOR
+DESC: DESCRIPTION
+OBJ: OBJECT
+TO: TO
+ACN: ACTION
+TNS: TENSE
+*/
+
 class Parser {
 private:
 	bool token_available;
@@ -19,8 +31,9 @@ private:
 		"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
 		"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
 	};
+
+	ofstream fout;
 public:
-	Parser();
 	Parser(string filename);
 	tokentype next_token();
 	bool match(tokentype expected);
@@ -35,6 +48,9 @@ public:
 	void story();
 	void syntaxerror1(tokentype expected, string lexeme);
 	void syntaxerror2(string functionname, string lexeme);
+
+	void getEword();
+	void gen(gentype type);
 };
 
 
