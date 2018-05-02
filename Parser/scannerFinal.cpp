@@ -1,44 +1,23 @@
 #ifndef scannerFinal_C
 #define scannerFinal_C
 
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <algorithm>
-#include <iterator>
-#include <unordered_map>
+#include "scanner.h"
 
 using namespace std;
 
-enum tokentype {
-	ERROR, WORD1, WORD2, PERIOD, VERB, VERBNEG, VERBPAST, VERBPASTNEG, IS,
-	WAS, OBJECT, SUBJECT, DESTINATION, PRONOUN, CONNECTOR, EOFM
-};
-
-ifstream fin;
-unordered_map<string, tokentype> reservedWords;
-string tokenNames[30] =
-{
-	"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
-	"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
-};
-
-bool startup(string filename);
-int scanner(tokentype& type, string& word);
-void setUpReservedWordsTable();
-bool periodToken(string s);
-bool wordToken(string s);
-
-bool startup(string filename)
+Scanner::Scanner()
 {
 	setUpReservedWordsTable();
+}
+
+bool Scanner::openfile(string filename) {
 	fin.open(filename);
 	return fin.is_open();
 }
 
 // Period DFA
 // Done by: Jonathan
-bool periodToken(string s)
+bool Scanner::periodToken(string s)
 {
 	string state = "q0";
 
@@ -59,14 +38,15 @@ bool periodToken(string s)
 
 // WordToken DFA 
 // Done by: Jack Wang
-// RE:
-bool wordToken(string s)
+// RE: [(c h | s h | t s | spec_consonants y | nonspec_consonants | any_legal_consonant) (vowel | vowel n | vowel vowel)]^+
+// spec_consonants: {b, g, h, k, m, n, p, r}
+// nonspec_consonants: {d, j, w, y, z}
+// any_legal_consonant: {b, d, g, h, j, k, m, n, p, r, s, t, w, y, z}
+bool Scanner::wordToken(string s)
 {
 	char c;
 	bool stuck = false;
-
 	string state = "q0";
-
 	// Very large combination of states.
 	string every[] = { "q0", "v", "s", "t", "spc", "nsc", "cs_h", "t_s", "spc_y" };
 	// Common combination of states.
@@ -148,7 +128,7 @@ bool wordToken(string s)
 
 // --------------------------------------------------------------
 
-void setUpReservedWordsTable()
+void Scanner::setUpReservedWordsTable()
 {
 	reservedWords["masu"] = VERB;
 	reservedWords["masen"] = VERBNEG;
@@ -178,14 +158,15 @@ void setUpReservedWordsTable()
 
 // Scaner processes only one word at a time
 // Done by: Jonathan
-int scanner(tokentype& type, string& word)
+int Scanner::scanner(tokentype& type, string& word)
 {
 	fin >> word;
+
+	cout << "Scanner called using word " << word << endl;
+
 	if (word == "eofm") {
 		fin.close();
 
-
-		cin.clear(); cin.ignore(); cin.get();
 		exit(1);
 	}
 	else if (wordToken(word)) {
@@ -211,7 +192,7 @@ int scanner(tokentype& type, string& word)
 	}
 
 	else {
-		cout << "Lexical error" << endl;
+		cout << "Lexical error: " << word << " is not a legal token." << endl;
 		type = ERROR;
 	}
 	return 0;
