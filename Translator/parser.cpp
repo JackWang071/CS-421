@@ -292,9 +292,11 @@ void Parser::s()
 void Parser::story()
 {
 	cout << "Processing <story>" << endl;
-	s();
+	//s();
 
 	while (true) {
+		s();
+		/*
 		switch (next_token())
 		{
 		case CONNECTOR:
@@ -324,6 +326,7 @@ void Parser::story()
 		default:
 			syntaxerror2("story()", saved_lexeme);
 		}
+		*/
 	}
 
 
