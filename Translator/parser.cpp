@@ -213,27 +213,26 @@ void Parser::afterObject()
 	{
 		case WORD2 :
 		{
-			verb();
-			tense();
+			verb(); getEword(); gen(ACTN);
+			tense(); gen(TNSE);
 			match(PERIOD);
 			break;
 		}
 		case WORD1 :
 		{
-			noun();
-			match(DESTINATION);
-			verb();
-			tense();
+			noun(); getEword(); 
+			match(DESTINATION); gen(TO);
+			verb(); getEword(); gen(ACTN);
+			tense(); gen(TNSE);
 			match(PERIOD);
 			break;
-
 		}
 		case PRONOUN :
 		{
-			noun();
-			match(DESTINATION);
-			verb();
-			tense();
+			noun(); getEword();
+			match(DESTINATION); gen(TO);
+			verb(); getEword(); gen(ACTN);
+			tense(); gen(TNSE);
 			match(PERIOD);
 			break;
 
@@ -267,30 +266,30 @@ void Parser::afterNoun()
 	{
 		case IS :
 		{
-			be();
+			be(); gen(DESC); gen(TNSE);
 			match(PERIOD);
 			break;
 		}
 
 		case WAS :
 		{
-			be();
+			be(); gen(DESC); gen(TNSE);
 			match(PERIOD);
 			break;
 		}
 
 		case DESTINATION :
 		{
-			match(DESTINATION);
-			verb();
-			tense();
+			match(DESTINATION); gen(TO);
+			verb(); getEword(); gen(ACTN);
+			tense(); gen(TNSE);
 			match(PERIOD);
 			break;
 		}
 
 		case OBJECT :
 		{
-			match(OBJECT);
+			match(OBJECT); gen(OBJ);
 			afterObject();
 			break;
 		}
@@ -307,22 +306,22 @@ void Parser::afterSubject()
 	{
 		case WORD2 :
 		{
-			verb();
-			tense();
+			verb(); getEword(); gen(ACTN);
+			tense(); gen(TNSE);
 			match(PERIOD);
 			break;
 		}
 
 		case WORD1 :
 		{
-			noun();
+			noun(); getEword();
 			afterNoun();
 			break;
 		}
 
 		case PRONOUN :
 		{
-			noun();
+			noun(); getEword();
 			afterNoun();
 			break;
 		}
@@ -339,25 +338,25 @@ void Parser::s()
 	{
 		case CONNECTOR :
 		{
-			match(CONNECTOR);
-			noun();
-			match(SUBJECT);
+			match(CONNECTOR); getEword();  gen(CONN);
+			noun(); getEword();
+			match(SUBJECT); gen(ACTR);
 			afterSubject();
 			break;
 		}
 
 		case WORD1 :
 		{
-			noun();
-			match(SUBJECT);
+			noun(); getEword();
+			match(SUBJECT); gen(ACTR);
 			afterSubject();
 			break;
 		}
 
 		case PRONOUN :
 		{
-			noun();
-			match(SUBJECT);
+			noun(); getEword();
+			match(SUBJECT); gen(ACTR);
 			afterSubject();
 			break;
 		}
