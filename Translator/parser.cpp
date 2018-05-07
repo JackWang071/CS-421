@@ -29,6 +29,60 @@ Parser::Parser(string filename) {
 	}
 }
 
+void Parser::setupDict() {
+	dictionary.insert("desu", "is");
+	dictionary.insert("deshita", "was");
+	dictionary.insert("watashi", "I/me");
+	dictionary.insert("anata", "you");
+	dictionary.insert("kare", "he/him");
+	dictionary.insert("kanojo", "she/her");
+	dictionary.insert("sore", "it");
+	dictionary.insert("mata", "Also");
+	dictionary.insert("soshite", "Then");
+	dictionary.insert("shikashi", "However");
+	dictionary.insert("dakara", "Therefore");
+
+	//From lexicon
+	dictionary.insert("daigaku", "college");
+	dictionary.insert("kurasu", "class");
+	dictionary.insert("hon", "book");
+	dictionary.insert("tesuto", "test");
+	dictionary.insert("ie", "home");
+	dictionary.insert("isu", "chair");
+	dictionary.insert("seito", "student");
+	dictionary.insert("sensei", "teacher");
+	dictionary.insert("tomodachi", "friend");
+	dictionary.insert("jidoosha", "car");
+	dictionary.insert("gyuunyuu", "milk");
+	dictionary.insert("biiru", "beer");
+	dictionary.insert("choucho", "butterfly");
+	dictionary.insert("ryouri", "cooking");
+	dictionary.insert("toire", "restroom");
+	dictionary.insert("gohan", "meal");
+	dictionary.insert("yasashii", "easy");
+	dictionary.insert("muzukashii", "difficult");
+	dictionary.insert("ureshii", "pleased");
+	dictionary.insert("shiawase", "happy");
+	dictionary.insert("kanashii", "sad");
+	dictionary.insert("omoi", "heavy");
+	dictionary.insert("oishii", "delicious");
+	dictionary.insert("tennen", "natural");
+	dictionary.insert("nakI", "cry");
+	dictionary.insert("ikI", "go");
+	dictionary.insert("tabE", "eat");
+	dictionary.insert("ukE", "take");
+	dictionary.insert("kakI", "write");
+	dictionary.insert("yomI", "read");
+	dictionary.insert("nomI", "drink");
+	dictionary.insert("agE", "give");
+	dictionary.insert("moraI", "receive");
+	dictionary.insert("butsI", "hit");
+	dictionary.insert("kerI", "kick");
+	dictionary.insert("shaberI", "talk");
+	dictionary.insert("yarI", "do");
+	dictionary.insert("yorokobI", "enjoy");
+}
+
 // ** Need the updated match and next_token (with 2 global vars)
 // Done by: Jonathan Tapia
 tokentype Parser::next_token()
@@ -56,12 +110,37 @@ bool Parser::match(tokentype expected)
 	}
 }
 
-// ** Done by:
+// ** Done by: Jack Wang
 void Parser::getEword() {
-	
+	string jt = saved_lexeme;
+	try {
+		saved_lexeme = dictionary.at(saved_lexeme);
+	}
+	catch (out_of_range oor) {
+		saved_lexeme = jt;
+	}
 }
-void Parser::gen(gentype type) {
 
+// ** Done by: Marcus Jackson
+void Parser::gen(gentype type) {
+	switch (type) {
+	case CONN:
+		fout << "CONNECTOR:\t" + saved_lexeme + "\n"; break;
+	case ACTR:
+		fout << "ACTOR:\t" + saved_lexeme + "\n"; break;
+	case DESC: 
+		fout << "OBJECT:\t" + saved_lexeme + "\n"; break;
+	case OBJ: 
+		fout << "OBJECT:\t" + saved_lexeme + "\n"; break;
+	case ACTN:
+		fout << "ACTION:\t" + saved_lexeme + "\n"; break;
+	case TO: 
+		fout << "TO:\t\t" + saved_lexeme + "\n"; break;
+	case TNSE:
+		fout << "TENSE:\t" + tokenNames[(int)saved_token] + "\n"; break;
+	default:
+		fout << saved_lexeme + " "; break;
+	}
 }
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
@@ -292,43 +371,10 @@ void Parser::s()
 void Parser::story()
 {
 	cout << "Processing <story>" << endl;
-	//s();
 
 	while (true) {
 		s();
-		/*
-		switch (next_token())
-		{
-		case CONNECTOR:
-		{
-			match(CONNECTOR);
-			noun();
-			match(SUBJECT);
-			afterSubject();
-			break;
-		}
-
-		case WORD1:
-		{
-			noun();
-			match(SUBJECT);
-			afterSubject();
-			break;
-		}
-
-		case PRONOUN:
-		{
-			noun();
-			match(SUBJECT);
-			afterSubject();
-			break;
-		}
-		default:
-			syntaxerror2("story()", saved_lexeme);
-		}
-		*/
 	}
-
 
 	cout << "Successfully parsed <story>" << endl;
 }
