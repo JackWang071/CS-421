@@ -21,6 +21,7 @@ Parser::Parser(string filename) {
 	if (scanner.openfile(filename.c_str())) //file opened
 	{
 		fout.open("translated.txt");
+		fout << "Starting write" << endl;
 		story();
 	}
 	else //file unable to be opened
@@ -29,58 +30,60 @@ Parser::Parser(string filename) {
 	}
 }
 
+// ** Done by: Jack Wang
+//Hard-codes a number of Japanese words and English translations into the dictionary.
 void Parser::setupDict() {
-	dictionary.insert("desu", "is");
-	dictionary.insert("deshita", "was");
-	dictionary.insert("watashi", "I/me");
-	dictionary.insert("anata", "you");
-	dictionary.insert("kare", "he/him");
-	dictionary.insert("kanojo", "she/her");
-	dictionary.insert("sore", "it");
-	dictionary.insert("mata", "Also");
-	dictionary.insert("soshite", "Then");
-	dictionary.insert("shikashi", "However");
-	dictionary.insert("dakara", "Therefore");
+	dictionary.push_back(word("desu", "is"));
+	dictionary.push_back(word("deshita", "was"));
+	dictionary.push_back(word("watashi", "I/me"));
+	dictionary.push_back(word("anata", "you"));
+	dictionary.push_back(word("kare", "he/him"));
+	dictionary.push_back(word("kanojo", "she/her"));
+	dictionary.push_back(word("sore", "it"));
+	dictionary.push_back(word("mata", "Also"));
+	dictionary.push_back(word("soshite", "Then"));
+	dictionary.push_back(word("shikashi", "However"));
+	dictionary.push_back(word("dakara", "Therefore"));
 
 	//From lexicon
-	dictionary.insert("daigaku", "college");
-	dictionary.insert("kurasu", "class");
-	dictionary.insert("hon", "book");
-	dictionary.insert("tesuto", "test");
-	dictionary.insert("ie", "home");
-	dictionary.insert("isu", "chair");
-	dictionary.insert("seito", "student");
-	dictionary.insert("sensei", "teacher");
-	dictionary.insert("tomodachi", "friend");
-	dictionary.insert("jidoosha", "car");
-	dictionary.insert("gyuunyuu", "milk");
-	dictionary.insert("biiru", "beer");
-	dictionary.insert("choucho", "butterfly");
-	dictionary.insert("ryouri", "cooking");
-	dictionary.insert("toire", "restroom");
-	dictionary.insert("gohan", "meal");
-	dictionary.insert("yasashii", "easy");
-	dictionary.insert("muzukashii", "difficult");
-	dictionary.insert("ureshii", "pleased");
-	dictionary.insert("shiawase", "happy");
-	dictionary.insert("kanashii", "sad");
-	dictionary.insert("omoi", "heavy");
-	dictionary.insert("oishii", "delicious");
-	dictionary.insert("tennen", "natural");
-	dictionary.insert("nakI", "cry");
-	dictionary.insert("ikI", "go");
-	dictionary.insert("tabE", "eat");
-	dictionary.insert("ukE", "take");
-	dictionary.insert("kakI", "write");
-	dictionary.insert("yomI", "read");
-	dictionary.insert("nomI", "drink");
-	dictionary.insert("agE", "give");
-	dictionary.insert("moraI", "receive");
-	dictionary.insert("butsI", "hit");
-	dictionary.insert("kerI", "kick");
-	dictionary.insert("shaberI", "talk");
-	dictionary.insert("yarI", "do");
-	dictionary.insert("yorokobI", "enjoy");
+	dictionary.push_back(word("daigaku", "college"));
+	dictionary.push_back(word("kurasu", "class"));
+	dictionary.push_back(word("hon", "book"));
+	dictionary.push_back(word("tesuto", "test"));
+	dictionary.push_back(word("ie", "home"));
+	dictionary.push_back(word("isu", "chair"));
+	dictionary.push_back(word("seito", "student"));
+	dictionary.push_back(word("sensei", "teacher"));
+	dictionary.push_back(word("tomodachi", "friend"));
+	dictionary.push_back(word("jidoosha", "car"));
+	dictionary.push_back(word("gyuunyuu", "milk"));
+	dictionary.push_back(word("biiru", "beer"));
+	dictionary.push_back(word("choucho", "butterfly"));
+	dictionary.push_back(word("ryouri", "cooking"));
+	dictionary.push_back(word("toire", "restroom"));
+	dictionary.push_back(word("gohan", "meal"));
+	dictionary.push_back(word("yasashii", "easy"));
+	dictionary.push_back(word("muzukashii", "difficult"));
+	dictionary.push_back(word("ureshii", "pleased"));
+	dictionary.push_back(word("shiawase", "happy"));
+	dictionary.push_back(word("kanashii", "sad"));
+	dictionary.push_back(word("omoi", "heavy"));
+	dictionary.push_back(word("oishii", "delicious"));
+	dictionary.push_back(word("tennen", "natural"));
+	dictionary.push_back(word("nakI", "cry"));
+	dictionary.push_back(word("ikI", "go"));
+	dictionary.push_back(word("tabE", "eat"));
+	dictionary.push_back(word("ukE", "take"));
+	dictionary.push_back(word("kakI", "write"));
+	dictionary.push_back(word("yomI", "read"));
+	dictionary.push_back(word("nomI", "drink"));
+	dictionary.push_back(word("agE", "give"));
+	dictionary.push_back(word("moraI", "receive"));
+	dictionary.push_back(word("butsI", "hit"));
+	dictionary.push_back(word("kerI", "kick"));
+	dictionary.push_back(word("shaberI", "talk"));
+	dictionary.push_back(word("yarI", "do"));
+	dictionary.push_back(word("yorokobI", "enjoy"));
 }
 
 // ** Need the updated match and next_token (with 2 global vars)
@@ -111,35 +114,36 @@ bool Parser::match(tokentype expected)
 }
 
 // ** Done by: Jack Wang
+//Finds the English translation of the current saved_lexeme in the dictionary, if such a translation exists.
 void Parser::getEword() {
-	string jt = saved_lexeme;
-	try {
-		saved_lexeme = dictionary.at(saved_lexeme);
-	}
-	catch (out_of_range oor) {
-		saved_lexeme = jt;
+	for (int i = 0; i < dictionary.size(); i++) {
+		if (saved_lexeme == dictionary[i].jp) {
+			saved_lexeme = dictionary[i].en;
+			break;
+		}
 	}
 }
 
 // ** Done by: Marcus Jackson
+// Outputs the internal representation of each Japanese word in a sentence. 
 void Parser::gen(gentype type) {
 	switch (type) {
 	case CONN:
-		fout << "CONNECTOR:\t" + saved_lexeme + "\n"; break;
+		fout << "CONNECTOR:\t" + saved_lexeme << endl; break;
 	case ACTR:
-		fout << "ACTOR:\t" + saved_lexeme + "\n"; break;
+		fout << "ACTOR:\t" + saved_lexeme << endl; break;
 	case DESC: 
-		fout << "OBJECT:\t" + saved_lexeme + "\n"; break;
+		fout << "OBJECT:\t" + saved_lexeme << endl; break;
 	case OBJ: 
-		fout << "OBJECT:\t" + saved_lexeme + "\n"; break;
-	case ACTN:
-		fout << "ACTION:\t" + saved_lexeme + "\n"; break;
-	case TO: 
-		fout << "TO:\t\t" + saved_lexeme + "\n"; break;
+		fout << "OBJECT:\t" + saved_lexeme << endl; break;
+	case ACTN: 
+		fout << "ACTION:\t" + saved_lexeme << endl; break;
+	case TO:
+		fout << "TO:\t\t" + saved_lexeme << endl; break;
 	case TNSE:
-		fout << "TENSE:\t" + tokenNames[(int)saved_token] + "\n"; break;
+		fout << "TENSE:\t" << tokenNames[(int)saved_token] << endl; break;
 	default:
-		fout << saved_lexeme + " "; break;
+		fout << saved_lexeme << endl; break;
 	}
 }
 
@@ -206,6 +210,11 @@ void Parser::noun()
 }
 
 //<afterObject> ::= <verb> <tense>PERIOD | <noun> DESTINATION <verb> <tense> PERIOD
+/*
+Case 1: <after object> ::= <verb> #getEword# #gen (ACTION)# <tense> #gen(TENSE)# PERIOD
+Case 2: <after object> ::= <noun> #getEword# DESTINATION #gen(TO)# 
+							<verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+*/
 void Parser::afterObject()
 {
 	cout << "Processing <afterObject>" << endl;
@@ -227,7 +236,7 @@ void Parser::afterObject()
 			match(PERIOD);
 			break;
 		}
-		case PRONOUN :
+		case PRONOUN : //same rules as WORD1
 		{
 			noun(); getEword();
 			match(DESTINATION); gen(TO);
@@ -259,6 +268,15 @@ void Parser::be()
 }
 
 //<afterNoun> ::= <be> PERIOD | DESTINATION <verb> <tense> PERIOD | OBJECT <afterOject>
+/*
+Case 1: <after noun> ::= <be> #gen(DESCRIPTION)# #gen(TENSE)# PERIOD
+Case 2: <after noun> ::= DESTINATION #gen(TO)# <verb> #getEword# #gen(ACTION)# 
+						<tense> #gen(TENSE)# PERIOD
+Case 3: <after noun> ::= OBJECT #gen(OBJECT)# <verb> #getEword# #gen (ACTION)# 
+						<tense> #gen(TENSE)# PERIOD
+Case 4: <after noun> ::= OBJECT #gen(OBJECT)# <noun> #getEword# DESTINATION #gen(TO)# 
+						<verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+*/
 void Parser::afterNoun()
 {
 	cout << "Processing <afterNoun>" << endl;
@@ -271,7 +289,7 @@ void Parser::afterNoun()
 			break;
 		}
 
-		case WAS :
+		case WAS : //same rules as IS
 		{
 			be(); gen(DESC); gen(TNSE);
 			match(PERIOD);
@@ -299,6 +317,12 @@ void Parser::afterNoun()
 }
 
 //<afterSubject> ::= <verb> <tense> PERIOD | <noun> <afterNoun>
+/*
+Case 1: <after noun> :: = <be> #gen(DESCRIPTION)# #gen(TENSE)# PERIOD
+Case 2: <after noun> :: = DESTINATION #gen(TO)# <verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+Case 3: <after noun> :: = OBJECT #gen(OBJECT)# <verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+Case 4: <after noun> :: = OBJECT #gen(OBJECT)# <noun> #getEword# DESTINATION #gen(TO)# <verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+*/
 void Parser::afterSubject()
 {
 	cout << "Processing <afterSubject>" << endl;
@@ -319,7 +343,7 @@ void Parser::afterSubject()
 			break;
 		}
 
-		case PRONOUN :
+		case PRONOUN : //same rules as WORD1
 		{
 			noun(); getEword();
 			afterNoun();
@@ -331,6 +355,21 @@ void Parser::afterSubject()
 }
 
 //<s> ::= [CONNECTOR]<noun> SUBJECT <afterSubject>
+/*
+Case 1: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJECT #gen(ACTOR)# 
+					<verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+Case 2: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJECT #gen(ACTOR)# 
+					<noun> #getEword# <be> #gen(DESCRIPTION)# #gen(TENSE)# PERIOD
+Case 3: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJECT #gen(ACTOR)# 
+					<noun> #getEword# DESTINATION #gen(TO)# <verb> #getEword# #gen(ACTION)# 
+					<tense> #gen(TENSE)# PERIOD
+Case 4: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJECT #gen(ACTOR)# 
+					<noun> #getEword# OBJECT #gen(OBJECT)# <verb> #getEword# #gen(ACTION)# 
+					<tense> #gen(TENSE)# PERIOD
+Case 5: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJECT #gen(ACTOR)# 
+					<noun> #getEword# OBJECT #gen(OBJECT)# <noun> #getEword# DESTINATION #gen(TO)# 
+					<verb> #getEword# #gen(ACTION)# <tense> #gen(TENSE)# PERIOD
+*/
 void Parser::s()
 {
 	cout << "Processing <s>" << endl;
@@ -374,6 +413,8 @@ void Parser::story()
 	while (true) {
 		s();
 	}
+
+	fout.close();
 
 	cout << "Successfully parsed <story>" << endl;
 }

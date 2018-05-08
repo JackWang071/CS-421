@@ -23,12 +23,29 @@ using namespace std;
 // Done by  **
 int main()
 {
-  //- opens the output file translated.txt
-  //- opens the input file
-  //- calls the <story> to start parsing
-  //- closes the input file 
-  //- closes traslated.txt
- 
+	//- opens the output file translated.txt
+	//- opens the input file
+	//- calls the <story> to start parsing
+	//- closes the input file 
+	//- closes traslated.txt
+
+	string input; //input from the user
+	string word; //word to be stored from the file
+
+	cout << "Enter the filename: "; //getting the file name
+	cin >> input;
+
+	ofstream fileOut;
+	fileOut.open("translated.txt");
+
+	Parser test(input);
+
+	fileOut.close();
+
+	//- opens the input file
+	//- calls the <story> to start parsing
+	//- closes the input file 
+	return 0;
 }// end
 
 

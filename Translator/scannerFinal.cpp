@@ -168,6 +168,7 @@ int Scanner::scanner(tokentype& type, string& word)
 		fin.close();
 
 		exit(1);
+		//return -1;
 	}
 	else if (wordToken(word)) {
 		unordered_map<string, tokentype>::const_iterator pair = reservedWords.find(word);

@@ -4,21 +4,31 @@
 
 #include<iostream>
 #include<string>
+#include<vector>
 using namespace std;
 
 #include "scanner.h"
 
-enum gentype { CONN, ACR, DESC, OBJ, TO, ACN, TNS };
+enum gentype { CONN, ACTR, DESC, OBJ, TO, ACTN, TNSE };
 /*
-Using abbreviated names because we're lazy.
 CONN: CONNECTOR
-ACR: ACTOR
+ACTR: ACTOR
 DESC: DESCRIPTION
 OBJ: OBJECT
 TO: TO
-ACN: ACTION
-TNS: TENSE
+ACTN: ACTION
+TNSE: TENSE
 */
+
+struct word {
+	string jp; //Japanese word
+	string en; //English translation
+	//Constructor
+	word(string j, string e) {
+		jp = j;
+		en = e;
+	}
+};
 
 class Parser {
 private:
@@ -26,6 +36,8 @@ private:
 	tokentype saved_token;
 	string saved_lexeme;
 	Scanner scanner;
+	gentype saved_gentype;
+	vector<word> dictionary;
 	string tokenNames[30] =
 	{
 		"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
@@ -51,6 +63,8 @@ public:
 
 	void getEword();
 	void gen(gentype type);
+
+	void setupDict();
 };
 
 
