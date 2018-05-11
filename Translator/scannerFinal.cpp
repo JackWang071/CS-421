@@ -167,6 +167,8 @@ int Scanner::scanner(tokentype& type, string& word)
 	if (word == "eofm") {
 		fin.close();
 
+
+		cin.clear(); cin.ignore(); cin.get();
 		exit(1);
 		//return -1;
 	}

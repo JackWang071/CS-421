@@ -21,12 +21,11 @@ TNSE: TENSE
 */
 
 struct word {
-	string jp; //Japanese word
-	string en; //English translation
-	//Constructor
-	word(string j, string e) {
-		jp = j;
-		en = e;
+	string key;
+	string value;
+	word(string k, string v) {
+		key = k;
+		value = v;
 	}
 };
 
@@ -35,9 +34,10 @@ private:
 	bool token_available;
 	tokentype saved_token;
 	string saved_lexeme;
+	string saved_eword;
 	Scanner scanner;
 	gentype saved_gentype;
-	vector<word> dictionary;
+	unordered_map<string, string> dictionary;
 	string tokenNames[30] =
 	{
 		"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
