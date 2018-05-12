@@ -86,14 +86,20 @@ int main()
 	//- closes the input file 
 	//- closes traslated.txt
 
-	string input; //input from the user
-	string word; //word to be stored from the file
+	string input; //filename input from the user
+	string input2; //parser trace input from the user
 
 	cout << "Enter the filename: "; //getting the file name
 	cin >> input;
 
-	Parser test(input);
-
+	cout << "Do you want the parser trace on? (y/n): ";
+	cin >> input2;
+	if (input2[0] == 'n' || input2[0] == 'N') {
+		Parser test(input, false);
+	}
+	else {
+		Parser test(input, true);
+	}
 	
 
 	//- opens the input file

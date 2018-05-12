@@ -43,10 +43,11 @@ private:
 		"ERROR", "WORD1", "WORD2", "PERIOD", "VERB", "VERBNEG", "VERBPAST", "VERBPASTNEG", "IS",
 		"WAS", "OBJECT", "SUBJECT", "DESTINATION", "PRONOUN", "CONNECTOR", "EOFM"
 	};
-
-	ofstream fout;
+	ofstream fout_translated;
+	ofstream fout_errors;
+	bool trace = true;
 public:
-	Parser(string filename);
+	Parser(string filename, bool t);
 	tokentype next_token();
 	bool match(tokentype expected);
 	void tense();
@@ -64,7 +65,10 @@ public:
 	void getEword();
 	void gen(gentype type);
 
+	//Extra credit
 	void setupDict();
+	void print(string message);
+	void error_recovery(int errortype);
 };
 
 

@@ -15,18 +15,31 @@ using namespace std;
 // ** Need the updated match and next_token (with 2 global vars)
 
 // ** Be sure to put the name of the programmer above each function
-// i.e. Done by:
+// i.e. Done by: Jack Wang
 
-Parser::Parser(string filename) {
+Parser::Parser(string filename, bool t) {
 	setupDict();
+	trace = t;
 	if (scanner.openfile(filename.c_str())) //file opened
 	{
-		fout.open("translated.txt");
+		fout_translated.open("translated.txt");
+		fout_translated << "Translating: " << filename << endl;
+		fout_errors.open("errors.txt");
+		fout_errors << "Error log for: " << filename << endl;
 		story();
 	}
 	else //file unable to be opened
 	{
 		cout << filename.c_str() << " was unable to be opened." << endl;
+	}
+}
+
+// ** Done by: Jack Wang
+//Printing function for parser trace messages, used to control whether a message is printed or not.
+void Parser::print(string message) {
+	fout_errors << message << endl;
+	if (trace) {
+		cout << message << endl;
 	}
 }
 
@@ -102,18 +115,17 @@ bool Parser::match(tokentype expected)
 {
 	if (next_token() != expected)  // mismatch has occurred with the next token
 	{
+		token_available = false;
 		syntaxerror1(expected, saved_lexeme);
 		return false;
 	}
 	else  // match has occurred
 	{
 		token_available = false;  // eat up the token
-		cout << "Matched " << tokenNames[(int)expected] << endl;
-
+		print("Matched " + tokenNames[(int)expected]);
 		if (expected == PERIOD) {
-			fout << endl;
+			fout_translated << endl;
 		}
-
 		return true;              // say there was a match
 	}
 }
@@ -123,23 +135,13 @@ bool Parser::match(tokentype expected)
 void Parser::getEword() {
 	unordered_map<string, string>::const_iterator eword = dictionary.find(saved_lexeme);
 	if (eword == dictionary.end()) {
-		cout << "No English translation found for " << saved_lexeme << "." << endl;
+		print("No English translation found for " + saved_lexeme + ".");
 		saved_eword = saved_lexeme;
 	}
 	else {
 		saved_eword = eword->second;
-		cout << "English translation of " << saved_lexeme << ": " << saved_eword << endl;
+		print("English translation of " + saved_lexeme + ": " + saved_eword);
 	}
-	
-	/*
-	saved_eword = saved_lexeme;
-	for (int i = 0; i < dictionary.size(); i++) {
-		if (dictionary[i].key == saved_lexeme) {
-			saved_eword = dictionary[i].value;
-			cout << "English translation of " << saved_lexeme << ": " << saved_eword << endl;
-		}
-	}
-	*/
 }
 
 // ** Done by: Marcus Jackson
@@ -147,39 +149,66 @@ void Parser::getEword() {
 void Parser::gen(gentype type) {
 	switch (type) {
 	case CONN:
-		fout << "CONNECTOR:\t" << saved_eword << endl; break;
+		fout_translated << "CONNECTOR:\t" << saved_eword << endl; break;
 	case ACTR:
-		fout << "ACTOR:\t" << saved_eword << endl; break;
+		fout_translated << "ACTOR:\t" << saved_eword << endl; break;
 	case DESC: 
-		fout << "DESCRIPTION:\t" << saved_eword << endl; break;
+		fout_translated << "DESCRIPTION:\t" << saved_eword << endl; break;
 	case OBJ: 
-		fout << "OBJECT:\t" << saved_eword << endl; break;
+		fout_translated << "OBJECT:\t" << saved_eword << endl; break;
 	case ACTN: 
-		fout << "ACTION:\t" << saved_eword << endl; break;
+		fout_translated << "ACTION:\t" << saved_eword << endl; break;
 	case TO:
-		fout << "TO:\t" << saved_eword << endl; break;
+		fout_translated << "TO:\t" << saved_eword << endl; break;
 	case TNSE:
-		fout << "TENSE:\t" << tokenNames[(int)saved_token] << endl; break;
+		fout_translated << "TENSE:\t" << tokenNames[(int)saved_token] << endl; break;
 	default:
-		fout << saved_eword << endl; break;
+		fout_translated << saved_eword << endl; break;
 	}
 }
 
 // ** Need syntaxerror1 and syntaxerror2 functions (each takes 2 args)
 // ** Done by: Jack Wang
 void Parser::syntaxerror1(tokentype expected, string lexeme) {
-	cout << "SYNTAX ERROR: expected " << tokenNames[(int)expected] << " but found " << lexeme << endl;
-
-	cin.clear(); cin.ignore(); cin.get();
-	
-	exit(1);
+	string message = "SYNTAX ERROR: expected " + tokenNames[(int)expected] + " but found " + lexeme;
+	cout << message << endl;
+	fout_errors << message << endl;
+	error_recovery(1);
 }
 void Parser::syntaxerror2(string functionName, string lexeme) {
-	cout << "SYNTAX ERROR: unexpected " << lexeme << " found in " << functionName << endl;
+	string message = "SYNTAX ERROR: unexpected " + lexeme + " found in " + functionName;
+	cout << message << endl;
+	fout_errors << message << endl;
+	error_recovery(2);
+}
 
-	cin.clear(); cin.ignore(); cin.get();
+// ** Done by: 
+//Allows user to decide whether to continue parsing after a syntax error.
+void Parser::error_recovery(int errortype) {
+	//Syntax recovery
+	string keepgoing;
+	cout << "Recover? (y/n): ";
+	cin >> keepgoing;
 
-	exit(1);
+	if (keepgoing[0] == 'n' || keepgoing[0] == 'N') {
+		cin.clear(); cin.ignore(); cin.get();
+		exit(1);
+	}
+	//Recovery option for syntaxerror1.
+	else if (errortype == 1) {
+		print("Recovering: skipping past current token.");
+		next_token();
+		token_available = false;
+	}
+	//Recovery option for syntaxerror2.
+	else if (errortype == 2) {
+		print("Recovering: skipping past current sentence.");
+		//Skipping past the current sentence.
+		while (saved_lexeme[0] != '.') {
+			next_token();
+			token_available = false;
+		}
+	}
 }
 
 // ** Make each non-terminal into a function here
@@ -189,7 +218,7 @@ void Parser::syntaxerror2(string functionName, string lexeme) {
 // <tense> ::= VERBPAST | VERBPASTNEG | VERB | VERBNEG
 void Parser::tense()
 {
-	cout << "Processing <tense>" << endl;
+	print("Processing <tense>");
 	switch(next_token())
 	{
 		case VERBPAST:
@@ -208,7 +237,7 @@ void Parser::tense()
 // <verb> ::= WORD2
 void Parser::verb()
 {
-	cout << "Processing <verb>" << endl;
+	print("Processing <verb>");
 	switch (next_token())
 	{
 		case WORD2:
@@ -221,7 +250,7 @@ void Parser::verb()
 //<noun> ::= WORD1 | PRONOUN
 void Parser::noun()
 {
-	cout << "Processing <noun>" << endl;
+	print("Processing <noun>");
 	switch (next_token())
 	{
 		case WORD1:
@@ -236,7 +265,7 @@ void Parser::noun()
 //<be> ::= IS | WAS
 void Parser::be()
 {
-	cout << "Processing <be>" << endl;
+	print("Processing <be>");
 	switch (next_token())
 	{
 		case IS :
@@ -257,7 +286,7 @@ Case 2: <after object> ::= <noun> #getEword# DESTINATION #gen(TO)#
 */
 void Parser::afterObject()
 {
-	cout << "Processing <afterObject>" << endl;
+	print("Processing <afterObject>");
 	switch (next_token())
 	{
 	case WORD2:
@@ -303,7 +332,7 @@ Case 4: <after noun> ::= OBJECT #gen(OBJECT)# <noun> #getEword# DESTINATION #gen
 */
 void Parser::afterNoun()
 {
-	cout << "Processing <afterNoun>" << endl;
+	print("Processing <afterNoun>");
 	switch (next_token())
 	{
 		case IS :
@@ -349,7 +378,7 @@ Case 4: <after noun> :: = OBJECT #gen(OBJECT)# <noun> #getEword# DESTINATION #ge
 */
 void Parser::afterSubject()
 {
-	cout << "Processing <afterSubject>" << endl;
+	print("Processing <afterSubject>");
 	switch (next_token())
 	{
 		case WORD2 :
@@ -396,7 +425,7 @@ Case 5: <s> ::=  [CONNECTOR #getEword# #gen(CONNECTOR)#] <noun> #getEword# SUBJE
 */
 void Parser::s()
 {
-	cout << "Processing <s>" << endl;
+	print("Processing <s>");
 	switch (next_token())
 	{
 		case CONNECTOR :
@@ -436,15 +465,16 @@ void Parser::s()
 //<story> ::= <s> { <s> }
 void Parser::story()
 {
-	cout << "Processing <story>" << endl;
+	print("Processing <story>");
 
 	while (true) {
 		s();
 	}
 
-	fout.close();
+	fout_translated.close();
+	fout_errors.close();
 
-	cout << "Successfully parsed <story>" << endl;
+	print("Successfully parsed <story>.");
 }
 
 /*
