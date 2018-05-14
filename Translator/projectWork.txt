@@ -1,0 +1,27 @@
+1.	State who did what by indicating 
+Member A tasks (getEword) - who: Jack Wang
+Member B tasks (gen) - who: Marcus Jackson
+Member C tasks (comments) - who: Jonathan Tapia
+
+Who updated which parser functions with getEword and gen
+calls? 
+afterObject: Jonathan Tapia
+afterNoun: Marcus Jackson
+afterSubject: Jack Wang
+s: Jack Wang
+
+If the member did not fully contribute to the assigned part,
+do not list his/her name!!!!!
+
+2.Whether each person came to the meeting.
+Yes, all members came to group meetings.
+
+3.Whether you have included all the required comments.
+(updated the grammar rules in comments?)
+Yes, grammar rules with gen and getEword have been included in comments.
+
+4.Whether the project produced correct output for all 6
+test cases.
+Yes, project produced correct output for all 6 test cases.
+
+5. Any other remarks.
